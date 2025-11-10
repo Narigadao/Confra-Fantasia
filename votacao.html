@@ -1,47 +1,45 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <title>Votação - Confraternização GS1</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Votação - Confraternização GS1</title>
+<style>
+  body { background:#141414; color:white; font-family:Arial; text-align:center; }
+  .card { background:#1f1f1f; margin:10px auto; padding:15px; width:80%; border-radius:10px; }
+  button { background:#e50914; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; }
+  button:hover { background:#b0060f; }
+</style>
 </head>
 <body>
-  <header>🏆 Votação - Confraternização GS1</header>
-  <div class="container" id="lista">Carregando fantasias...</div>
-
+  <h1>🎭 Vote na Melhor Fantasia!</h1>
+  <div id="lista"></div>
+  
   <script>
-    const scriptURL = "COLE_AQUI_SEU_LINK_DO_APPS_SCRIPT";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwrkLD_b5bH_pNQJ2_Md4ng82SmBSrY_lagx7FVaFz9FmCh8Rv7EmnzhtHpa_ooQN5etA/exec";
+    const lista = document.getElementById("lista");
 
-    async function carregar() {
-      const res = await fetch(scriptURL, {
-        method: 'POST',
-        body: JSON.stringify({ action: "listar" })
+    fetch(scriptURL)
+      .then(res => res.json())
+      .then(data => {
+        lista.innerHTML = data.map(p => `
+          <div class="card">
+            <h3>${p.fantasia}</h3>
+            <p>por ${p.nome}</p>
+            <button onclick="votar('${p.fantasia}')">Votar</button>
+          </div>
+        `).join('');
       });
-      const data = await res.json();
 
-      const listaDiv = document.getElementById('lista');
-      listaDiv.innerHTML = '';
-      data.forEach(f => {
-        const div = document.createElement('div');
-        div.innerHTML = `
-          <h3>${f.fantasia}</h3>
-          <p><i>${f.nome}</i></p>
-          <button onclick="votar('${f.fantasia}')">Votar</button>
-          <hr>
-        `;
-        listaDiv.appendChild(div);
-      });
+    function votar(fantasia) {
+      const form = new FormData();
+      form.append("action", "votar");
+      form.append("fantasia", fantasia);
+
+      fetch(scriptURL, { method: "POST", body: form })
+        .then(r => r.text())
+        .then(() => alert("✅ Voto computado com sucesso!"));
     }
-
-    async function votar(fantasia) {
-      await fetch(scriptURL, {
-        method: 'POST',
-        body: JSON.stringify({ action: "votar", fantasia })
-      });
-      alert('Voto registrado!');
-    }
-
-    carregar();
   </script>
 </body>
 </html>
