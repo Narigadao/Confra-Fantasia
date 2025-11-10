@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Votação - Confraternização GS1</title>
+<style>
+body {
+  margin: 0; background: #141414; color: #fff; font-family: Arial, sans-serif;
+  text-align: center; padding: 20px;
+}
+h1 { color: #E50914; }
+.card {
+  background: #181818; padding: 15px; margin: 10px auto; width: 90%; max-width: 400px;
+  border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+button {
+  background: #E50914; color: white; border: none; padding: 8px 15px;
+  border-radius: 8px; cursor: pointer;
+}
+button:hover { background: #f40612; }
+</style>
+</head>
+<body>
+  <h1>Vote na melhor fantasia 🎭</h1>
+  <div id="lista"></div>
+
+  <script>
+  const api = "https://script.google.com/macros/s/AKfycbwa5XUEKEiT60kX3oy0svmxNLwOWT9J8f_vvlOxYGkIms1iyP-MjPdIGi1ddoqbVK3jVQ/exec";
+
+  async function carregar() {
+    const res = await fetch(api);
+    const dados = await res.json();
+    const lista = document.getElementById("lista");
+    lista.innerHTML = "";
+    dados.forEach(p => {
+      lista.innerHTML += `
+        <div class="card">
+          <h3>${p.nome}</h3>
+          <p>${p.fantasia}</p>
+          <button onclick="votar('${p.nome}')">Votar</button>
+        </div>
+      `;
+    });
+  }
+
+  async function votar(nome) {
+    await fetch(api, {
+      method: "POST",
+      body: JSON.stringify({ action: "votar", nome }),
+      headers: { "Content-Type": "application/json" }
+    });
+    alert("Voto registrado para " + nome + "!");
+  }
+
+  carregar();
+  </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Confraternização GS1</title>
+<style>
+body {
+  margin: 0; font-family: Arial, sans-serif; background: #141414; color: #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;
+}
+h1 { color: #E50914; font-size: 2.5rem; margin-bottom: 10px; }
+.container { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; }
+.card {
+  background: #181818; padding: 20px; border-radius: 12px; text-align: center;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+button {
+  background: #E50914; color: white; border: none; padding: 12px 20px; border-radius: 8px;
+  cursor: pointer; font-size: 1rem; margin-top: 10px;
+}
+button:hover { background: #f40612; }
+img { margin-top: 10px; width: 150px; height: 150px; }
+</style>
+</head>
+<body>
+  <h1>🎭 Confraternização GS1 🎉</h1>
+  <div class="container">
+    <div class="card">
+      <h2>Fazer Inscrição</h2>
+      <a href="inscricao.html"><button>Acessar</button></a><br>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://narigadao.github.io/Confra-Fantasia/inscricao.html">
+    </div>
+    <div class="card">
+      <h2>Votação</h2>
+      <a href="votacao.html"><button>Acessar</button></a><br>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://narigadao.github.io/Confra-Fantasia/votacao.html">
+    </div>
+  </div>
+</body>
+</html>

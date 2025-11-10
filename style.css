@@ -1,0 +1,173 @@
+/* ================================
+   Confraternização GS1 - Tema Netflix
+   ================================ */
+
+:root {
+  --bg1: #000000;
+  --bg2: #141414;
+  --accent: #e50914;
+  --text: #ffffff;
+  --text-muted: #b3b3b3;
+  --card: #1f1f1f;
+  --radius: 10px;
+  --transition: 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: linear-gradient(180deg, var(--bg1), var(--bg2));
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+}
+
+/* ========== HEADER ========== */
+header {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+header h1 {
+  font-size: 2rem;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* ========== CONTAINERS ========== */
+.container {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 25px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  transition: transform var(--transition);
+}
+
+.container:hover {
+  transform: scale(1.02);
+}
+
+/* ========== INPUTS ========== */
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: var(--radius);
+  border: none;
+  outline: none;
+  background: #333;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ========== BUTTONS ========== */
+button {
+  background-color: var(--accent);
+  color: var(--text);
+  border: none;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+button:hover {
+  background-color: #b0060d;
+}
+
+/* ========== QR SECTION ========== */
+.qr-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.qr-section img {
+  width: 180px;
+  margin: 15px 0;
+  border-radius: var(--radius);
+}
+
+/* ========== RESULT PAGE ========== */
+.resultado {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.resultado h2 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.resultado ul {
+  list-style: none;
+  width: 100%;
+}
+
+.resultado li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #222;
+  padding: 10px 15px;
+  margin: 5px 0;
+  border-radius: var(--radius);
+  font-size: 1.1rem;
+  transition: background var(--transition);
+}
+
+.resultado li:hover {
+  background: #333;
+}
+
+.resultado .votos {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+/* ========== FOOTER ========== */
+footer {
+  margin-top: auto;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 15px 0;
+}
+
+/* ========== ANIMAÇÕES ========== */
+.fade-in {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
