@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>QR Codes - Confraternização Fantasia</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  body {
+    background: #0a0a0a; color: #fff; font-family: Arial, sans-serif;
+    text-align: center; padding: 40px;
+  }
+  h1 { color: #ff6600; }
+  .cards {
+    display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 40px;
+  }
+  .card {
+    background: #111; padding: 20px; border-radius: 15px;
+    width: 280px; box-shadow: 0 0 15px rgba(255,255,255,0.1);
+  }
+</style>
+</head>
+<body>
+  <h1>Confraternização à Fantasia 🎭</h1>
+  <p>Escaneie o QR Code para se inscrever ou votar!</p>
+
+  <div class="cards">
+    <div class="card">
+      <h3>📋 Página de Inscrição</h3>
+      <div id="qrInscricao"></div>
+    </div>
+
+    <div class="card">
+      <h3>🗳️ Página de Votação</h3>
+      <div id="qrVotacao"></div>
+    </div>
+  </div>
+
+  <script>
+    new QRCode(document.getElementById("qrInscricao"), "https://narigadao.github.io/Confra-Fantasia/pagina-inscricao.html");
+    new QRCode(document.getElementById("qrVotacao"), "https://narigadao.github.io/Confra-Fantasia/pagina-votacao.html");
+  </script>
+</body>
+</html>
