@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Inscrição - Confraternização Fantasia</title>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top, #0b0c10, #1f2833);
+    color: #fff;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  h1 {
+    color: #66fcf1;
+  }
+
+  form {
+    max-width: 400px;
+    margin: 2rem auto;
+    background: #1f2833;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 15px #45a29e;
+  }
+
+  input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 8px;
+  }
+
+  button {
+    background: #45a29e;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 5px;
+  }
+
+  button:hover {
+    background: #66fcf1;
+    color: #0b0c10;
+  }
+
+  .lista {
+    margin-top: 2rem;
+    background: #0b0c10;
+    padding: 1rem;
+    border-radius: 10px;
+  }
+
+  li {
+    list-style: none;
+    padding: 5px;
+  }
+</style>
+</head>
+<body>
+  <h1>🎭 Inscrição - Fantasia Confraternização</h1>
+
+  <form id="formInscricao">
+    <input type="text" id="nome" placeholder="Seu nome" required><br>
+    <input type="text" id="fantasia" placeholder="Nome da fantasia" required><br>
+    <button type="submit">Enviar Inscrição</button>
+    <button type="button" id="resetBtn">🔄 Resetar Lista</button>
+    <button type="button" id="exportBtn">📁 Exportar CSV</button>
+  </form>
+
+  <div class="lista">
+    <h2>Inscritos:</h2>
+    <ul id="listaInscritos"></ul>
+  </div>
+
+  <script>
+    const form = document.getElementById("formInscricao");
+    const lista = document.getElementById("listaInscritos");
+    const resetBtn = document.getElementById("resetBtn");
+    const exportBtn = document.getElementById("exportBtn");
+
+    let inscritos = JSON.parse(localStorage.getItem("inscritos")) || [];
+
+    function atualizarLista() {
+      lista.innerHTML = "";
+      inscritos.forEach(i => {
+        const li = document.createElement("li");
+        li.textContent = `${i.nome} - ${i.fantasia}`;
+        lista.appendChild(li);
+      });
+    }
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const nome = document.getElementById("nome").value.trim();
+      const fantasia = document.getElementById("fantasia").value.trim();
+      if (nome && fantasia) {
+        inscritos.push({ nome, fantasia, votos: 0 });
+        localStorage.setItem("inscritos", JSON.stringify(inscritos));
+        form.reset();
+        atualizarLista();
+      }
+    });
+
+    resetBtn.addEventListener("click", () => {
+      if (confirm("Tem certeza que deseja apagar todos os inscritos?")) {
+        localStorage.removeItem("inscritos");
+        inscritos = [];
+        atualizarLista();
+      }
+    });
+
+    exportBtn.addEventListener("click", () => {
+      if (inscritos.length === 0) {
+        alert("Nenhum inscrito para exportar.");
+        return;
+      }
+      const header = "Nome,Fantasia,Votos\n";
+      const rows = inscritos.map(i => `${i.nome},${i.fantasia},${i.votos}`).join("\n");
+      const csv = header + rows;
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "inscritos_fantasia.csv";
+      link.click();
+    });
+
+    atualizarLista();
+  </script>
+</body>
+</html>
