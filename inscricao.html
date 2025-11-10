@@ -1,48 +1,48 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Inscrição - Confraternização GS1</title>
 <style>
-  body { background:#141414; color:white; font-family:Arial; text-align:center; }
-  form { background:#1f1f1f; display:inline-block; padding:20px; border-radius:10px; margin-top:50px; }
-  input { display:block; margin:10px auto; padding:10px; width:80%; border:none; border-radius:5px; }
-  button { background:#e50914; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; }
-  button:hover { background:#b0060f; }
-  .msg { margin-top:15px; }
+body {
+  margin: 0; background: #141414; color: #fff; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;
+}
+h1 { color: #E50914; margin-bottom: 20px; }
+input {
+  margin: 8px; padding: 12px; width: 250px; border-radius: 6px; border: none;
+}
+button {
+  margin-top: 15px; background: #E50914; color: white; border: none; padding: 10px 20px;
+  border-radius: 8px; cursor: pointer;
+}
+button:hover { background: #f40612; }
 </style>
 </head>
 <body>
-  <h1>🎭 Confraternização GS1</h1>
-  <h2>Inscrição para o Concurso de Fantasia</h2>
-  <form id="formInscricao">
-    <input type="text" name="nome" placeholder="Seu nome" required>
-    <input type="text" name="fantasia" placeholder="Nome da fantasia" required>
-    <button type="submit">Enviar</button>
-  </form>
-  <p class="msg" id="mensagem"></p>
-  <br>
-  <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://narigadao.github.io/Confra-Fantasia/inscricao.html" alt="QR Code">
-  
+  <h1>Inscrição 🎭</h1>
+  <input id="nome" placeholder="Seu nome completo">
+  <input id="fantasia" placeholder="Nome da fantasia">
+  <button onclick="enviar()">Enviar</button>
+
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwrkLD_b5bH_pNQJ2_Md4ng82SmBSrY_lagx7FVaFz9FmCh8Rv7EmnzhtHpa_ooQN5etA/exec";
-    const form = document.getElementById("formInscricao");
-    const msg = document.getElementById("mensagem");
+  const api = "https://script.google.com/macros/s/AKfycbwa5XUEKEiT60kX3oy0svmxNLwOWT9J8f_vvlOxYGkIms1iyP-MjPdIGi1ddoqbVK3jVQ/exec";
 
-    form.addEventListener("submit", e => {
-      e.preventDefault();
-      const data = new FormData(form);
-      data.append("action", "inscrever");
+  async function enviar() {
+    const nome = document.getElementById("nome").value.trim();
+    const fantasia = document.getElementById("fantasia").value.trim();
+    if (!nome || !fantasia) return alert("Preencha todos os campos!");
 
-      fetch(scriptURL, { method: "POST", body: data })
-        .then(res => res.text())
-        .then(txt => {
-          msg.innerText = "✅ Inscrição registrada com sucesso!";
-          form.reset();
-        })
-        .catch(err => msg.innerText = "❌ Erro ao enviar inscrição.");
+    await fetch(api, {
+      method: "POST",
+      body: JSON.stringify({ action: "inscrever", nome, fantasia }),
+      headers: { "Content-Type": "application/json" }
     });
+    alert("Inscrição registrada!");
+    document.getElementById("nome").value = "";
+    document.getElementById("fantasia").value = "";
+  }
   </script>
 </body>
 </html>
