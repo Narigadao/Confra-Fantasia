@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Inscrição - Fantasia GS1</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Inscreva sua Fantasia 🎭</h1>
+    <input id="nome" placeholder="Seu nome completo">
+    <input id="fantasia" placeholder="Nome da fantasia">
+    <button id="btnInscrever">Enviar inscrição</button>
+    <p id="mensagem"></p>
+  </div>
+
+  <script>
+    document.getElementById('btnInscrever').onclick = function() {
+      const nome = document.getElementById('nome').value.trim();
+      const fantasia = document.getElementById('fantasia').value.trim();
+      if (!nome || !fantasia) {
+        document.getElementById('mensagem').textContent = "Preencha todos os campos!";
+        return;
+      }
+
+      const inscricoes = JSON.parse(localStorage.getItem('inscricoes') || '[]');
+      inscricoes.push({ nome, fantasia, votos: 0 });
+      localStorage.setItem('inscricoes', JSON.stringify(inscricoes));
+
+      document.getElementById('mensagem').textContent = "✅ Inscrição enviada com sucesso!";
+      document.getElementById('nome').value = "";
+      document.getElementById('fantasia').value = "";
+    };
+  </script>
+</body>
+</html>
