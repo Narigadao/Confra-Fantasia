@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Sorteio Confraternização - GS1</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>🎉 Confraternização GS1</h1>
+    <p>Escaneie o QR Code abaixo para se inscrever!</p>
+    <canvas id="qrcode"></canvas>
+    <p><a href="inscricao.html" style="color: var(--accent);">Ou clique aqui se já estiver no computador</a></p>
+  </div>
+
+  <script>
+    const inscricaoURL = window.location.origin + window.location.pathname.replace("index.html", "") + "inscricao.html";
+    QRCode.toCanvas(document.getElementById('qrcode'), inscricaoURL);
+  </script>
+</body>
+</html>
