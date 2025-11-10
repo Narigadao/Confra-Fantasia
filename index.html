@@ -1,32 +1,99 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <title>Confraternização GS1</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Confraternização GS1</title>
+<style>
+  body {
+    background: #0a0a0a;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+  }
+  input, button {
+    margin: 8px;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+  }
+  button {
+    background: #0078ff;
+    color: white;
+    cursor: pointer;
+  }
+  #resultado {
+    margin-top: 40px;
+  }
+  table {
+    margin: 0 auto;
+    border-collapse: collapse;
+    width: 80%;
+  }
+  th, td {
+    border: 1px solid #555;
+    padding: 10px;
+  }
+</style>
 </head>
 <body>
-  <header>🎉 Confraternização GS1</header>
+  <h1>Confraternização GS1 🎉</h1>
 
-  <div class="container">
-    <h2>Escolha uma opção</h2>
-    <div class="qr">
-      <div>
-        <h3>Página de Inscrição</h3>
-        <canvas id="qrInscricao"></canvas>
-      </div>
-      <div>
-        <h3>Página de Votação</h3>
-        <canvas id="qrVotacao"></canvas>
-      </div>
-    </div>
-  </div>
+  <h2>Inscrição</h2>
+  <input id="nome" placeholder="Seu nome" />
+  <input id="fantasia" placeholder="Sua fantasia" />
+  <button onclick="inscrever()">Enviar</button>
+
+  <h2>Resultados</h2>
+  <div id="resultado">Carregando...</div>
 
   <script>
-    const base = window.location.origin + window.location.pathname.replace('index.html','');
-    QRCode.toCanvas(document.getElementById("qrInscricao"), base + "inscricao.html");
-    QRCode.toCanvas(document.getElementById("qrVotacao"), base + "votacao.html");
+    const apiURL = "https://script.google.com/macros/s/AKfycbwrkLD_b5bH_pNQJ2_Md4ng82SmBSrY_lagx7FVaFz9FmCh8Rv7EmnzhtHpa_ooQN5etA/exec";
+
+    // Envia dados para o Google Sheets
+    async function inscrever() {
+      const nome = document.getElementById('nome').value.trim();
+      const fantasia = document.getElementById('fantasia').value.trim();
+
+      if (!nome || !fantasia) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+      }
+
+      await fetch(apiURL, {
+        method: "POST",
+        body: JSON.stringify({ nome, fantasia }),
+        headers: { "Content-Type": "application/json" }
+      });
+
+      alert("Inscrição enviada!");
+      document.getElementById('nome').value = '';
+      document.getElementById('fantasia').value = '';
+
+      carregarResultados(); // atualiza automaticamente
+    }
+
+    // Carrega dados em tempo real
+    async function carregarResultados() {
+      const res = await fetch(apiURL);
+      const data = await res.json();
+
+      let html = `
+        <table>
+          <tr><th>Nome</th><th>Fantasia</th><th>Votos</th></tr>
+      `;
+      data.forEach(row => {
+        html += `<tr><td>${row.nome}</td><td>${row.fantasia}</td><td>${row.voto}</td></tr>`;
+      });
+      html += `</table>`;
+
+      document.getElementById("resultado").innerHTML = html;
+    }
+
+    // Atualiza automaticamente a cada 10 segundos
+    setInterval(carregarResultados, 10000);
+    carregarResultados();
   </script>
 </body>
 </html>
