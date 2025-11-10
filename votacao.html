@@ -3,26 +3,35 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Confraternização GS1 - Votação</title>
+<title>Votação - Confraternização GS1</title>
 <style>
-body { background: #0a0a0a; color: white; font-family: Arial; text-align: center; padding: 40px; }
-button { margin: 5px; padding: 10px; border-radius: 8px; border: none; background: #0078ff; color: white; cursor: pointer; }
-.card {
-  background: #111; border-radius: 12px; padding: 15px; margin: 10px auto; width: 90%; max-width: 400px;
+body {
+  margin: 0; background: #141414; color: #fff; font-family: Arial, sans-serif;
+  text-align: center; padding: 20px;
 }
+h1 { color: #E50914; }
+.card {
+  background: #181818; padding: 15px; margin: 10px auto; width: 90%; max-width: 400px;
+  border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+button {
+  background: #E50914; color: white; border: none; padding: 8px 15px;
+  border-radius: 8px; cursor: pointer;
+}
+button:hover { background: #f40612; }
 </style>
 </head>
 <body>
-  <h1>Votação 🎭</h1>
+  <h1>Vote na melhor fantasia 🎭</h1>
   <div id="lista"></div>
 
   <script>
-  const api = "https://script.google.com/macros/s/AKfycbwrkLD_b5bH_pNQJ2_Md4ng82SmBSrY_lagx7FVaFz9FmCh8Rv7EmnzhtHpa_ooQN5etA/exec";
+  const api = "https://script.google.com/macros/s/AKfycbwa5XUEKEiT60kX3oy0svmxNLwOWT9J8f_vvlOxYGkIms1iyP-MjPdIGi1ddoqbVK3jVQ/exec";
 
   async function carregar() {
     const res = await fetch(api);
     const dados = await res.json();
-    const lista = document.getElementById('lista');
+    const lista = document.getElementById("lista");
     lista.innerHTML = "";
     dados.forEach(p => {
       lista.innerHTML += `
