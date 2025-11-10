@@ -1,45 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Votação - Confraternização GS1</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Confraternização GS1 - Votação</title>
 <style>
-  body { background:#141414; color:white; font-family:Arial; text-align:center; }
-  .card { background:#1f1f1f; margin:10px auto; padding:15px; width:80%; border-radius:10px; }
-  button { background:#e50914; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; }
-  button:hover { background:#b0060f; }
+body { background: #0a0a0a; color: white; font-family: Arial; text-align: center; padding: 40px; }
+button { margin: 5px; padding: 10px; border-radius: 8px; border: none; background: #0078ff; color: white; cursor: pointer; }
+.card {
+  background: #111; border-radius: 12px; padding: 15px; margin: 10px auto; width: 90%; max-width: 400px;
+}
 </style>
 </head>
 <body>
-  <h1>🎭 Vote na Melhor Fantasia!</h1>
+  <h1>Votação 🎭</h1>
   <div id="lista"></div>
-  
+
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwrkLD_b5bH_pNQJ2_Md4ng82SmBSrY_lagx7FVaFz9FmCh8Rv7EmnzhtHpa_ooQN5etA/exec";
-    const lista = document.getElementById("lista");
+  const api = "https://script.google.com/macros/s/AKfycbwrkLD_b5bH_pNQJ2_Md4ng82SmBSrY_lagx7FVaFz9FmCh8Rv7EmnzhtHpa_ooQN5etA/exec";
 
-    fetch(scriptURL)
-      .then(res => res.json())
-      .then(data => {
-        lista.innerHTML = data.map(p => `
-          <div class="card">
-            <h3>${p.fantasia}</h3>
-            <p>por ${p.nome}</p>
-            <button onclick="votar('${p.fantasia}')">Votar</button>
-          </div>
-        `).join('');
-      });
+  async function carregar() {
+    const res = await fetch(api);
+    const dados = await res.json();
+    const lista = document.getElementById('lista');
+    lista.innerHTML = "";
+    dados.forEach(p => {
+      lista.innerHTML += `
+        <div class="card">
+          <h3>${p.nome}</h3>
+          <p>${p.fantasia}</p>
+          <button onclick="votar('${p.nome}')">Votar</button>
+        </div>
+      `;
+    });
+  }
 
-    function votar(fantasia) {
-      const form = new FormData();
-      form.append("action", "votar");
-      form.append("fantasia", fantasia);
+  async function votar(nome) {
+    await fetch(api, {
+      method: "POST",
+      body: JSON.stringify({ action: "votar", nome }),
+      headers: { "Content-Type": "application/json" }
+    });
+    alert("Voto registrado para " + nome + "!");
+  }
 
-      fetch(scriptURL, { method: "POST", body: form })
-        .then(r => r.text())
-        .then(() => alert("✅ Voto computado com sucesso!"));
-    }
+  carregar();
   </script>
 </body>
 </html>
