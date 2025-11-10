@@ -1,34 +1,41 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <title>Resultados - Confraternização GS1</title>
-  <link rel="stylesheet" href="style.css">
-  <meta http-equiv="refresh" content="10"> <!-- atualiza a cada 10 segundos -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resultados - Confraternização GS1</title>
+<style>
+  body { background:#141414; color:white; font-family:Arial; text-align:center; }
+  table { width:80%; margin:auto; border-collapse:collapse; margin-top:20px; }
+  th, td { border:1px solid #444; padding:10px; }
+  th { background:#e50914; }
+</style>
 </head>
 <body>
-  <header>📊 Resultados - Confraternização GS1</header>
-  <div class="container" id="ranking">Carregando resultados...</div>
+  <h1>🏆 Ranking de Fantasias</h1>
+  <table>
+    <thead><tr><th>Fantasia</th><th>Nome</th><th>Votos</th></tr></thead>
+    <tbody id="ranking"></tbody>
+  </table>
 
   <script>
-    const scriptURL = "COLE_AQUI_SEU_LINK_DO_APPS_SCRIPT";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwrkLD_b5bH_pNQJ2_Md4ng82SmBSrY_lagx7FVaFz9FmCh8Rv7EmnzhtHpa_ooQN5etA/exec";
+    const ranking = document.getElementById("ranking");
 
-    async function carregar() {
-      const res = await fetch(scriptURL, {
-        method: 'POST',
-        body: JSON.stringify({ action: "listar" })
-      });
-      const data = await res.json();
-      const ranking = data.sort((a,b) => b.votos - a.votos);
-
-      const div = document.getElementById('ranking');
-      div.innerHTML = '<h2>Ranking Atual</h2>';
-      ranking.forEach((r, i) => {
-        div.innerHTML += `<p>${i+1}️⃣ <b>${r.fantasia}</b> — ${r.votos} votos</p>`;
-      });
+    async function atualizar() {
+      const data = await fetch(scriptURL).then(r=>r.json());
+      data.sort((a,b) => b.voto - a.voto);
+      ranking.innerHTML = data.map(p => `
+        <tr>
+          <td>${p.fantasia}</td>
+          <td>${p.nome}</td>
+          <td>${p.voto}</td>
+        </tr>
+      `).join('');
     }
 
-    carregar();
+    atualizar();
+    setInterval(atualizar, 5000); // atualiza a cada 5 segundos
   </script>
 </body>
 </html>
