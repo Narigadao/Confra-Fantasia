@@ -1,41 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Resultados - Confraternização GS1</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Confraternização GS1 - Resultados</title>
 <style>
-  body { background:#141414; color:white; font-family:Arial; text-align:center; }
-  table { width:80%; margin:auto; border-collapse:collapse; margin-top:20px; }
-  th, td { border:1px solid #444; padding:10px; }
-  th { background:#e50914; }
+body {
+  background: black; color: white; font-family: Arial; text-align: center; padding: 30px;
+}
+table {
+  margin: 0 auto; width: 80%; border-collapse: collapse; font-size: 20px;
+}
+th, td {
+  padding: 12px; border-bottom: 1px solid #555;
+}
+th { color: #00bfff; }
 </style>
 </head>
 <body>
-  <h1>🏆 Ranking de Fantasias</h1>
-  <table>
-    <thead><tr><th>Fantasia</th><th>Nome</th><th>Votos</th></tr></thead>
-    <tbody id="ranking"></tbody>
-  </table>
+  <h1>Resultados em Tempo Real 🏆</h1>
+  <div id="tabela"></div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwrkLD_b5bH_pNQJ2_Md4ng82SmBSrY_lagx7FVaFz9FmCh8Rv7EmnzhtHpa_ooQN5etA/exec";
-    const ranking = document.getElementById("ranking");
+  const api = "https://script.google.com/macros/s/AKfycbwrkLD_b5bH_pNQJ2_Md4ng82SmBSrY_lagx7FVaFz9FmCh8Rv7EmnzhtHpa_ooQN5etA/exec";
 
-    async function atualizar() {
-      const data = await fetch(scriptURL).then(r=>r.json());
-      data.sort((a,b) => b.voto - a.voto);
-      ranking.innerHTML = data.map(p => `
-        <tr>
-          <td>${p.fantasia}</td>
-          <td>${p.nome}</td>
-          <td>${p.voto}</td>
-        </tr>
-      `).join('');
-    }
+  async function atualizar() {
+    const res = await fetch(api);
+    const dados = await res.json();
+    dados.sort((a, b) => b.voto - a.voto);
+    let html = "<table><tr><th>Nome</th><th>Fantasia</th><th>Votos</th></tr>";
+    dados.forEach(p => {
+      html += `<tr><td>${p.nome}</td><td>${p.fantasia}</td><td>${p.voto}</td></tr>`;
+    });
+    html += "</table>";
+    document.getElementById("tabela").innerHTML = html;
+  }
 
-    atualizar();
-    setInterval(atualizar, 5000); // atualiza a cada 5 segundos
+  setInterval(atualizar, 5000);
+  atualizar();
   </script>
 </body>
 </html>
