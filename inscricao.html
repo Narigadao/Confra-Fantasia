@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Confraternização GS1 - Inscrição</title>
+  <style>
+    :root {
+      --bg1:#000000;
+      --bg2:#141414;
+      --card:#1f1f1f;
+      --accent:#e50914;
+      --text:#ffffff;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, var(--bg1), var(--bg2));
+      color: var(--text);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    h1 {
+      color: var(--accent);
+      margin-bottom: 20px;
+      text-shadow: 0 0 8px var(--accent);
+    }
+    form {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 90%;
+      max-width: 400px;
+    }
+    input {
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      padding: 12px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #b0060f;
+    }
+    .msg {
+      margin-top: 10px;
+      font-size: 14px;
+      text-align: center;
+    }
+    .qrcode {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Confraternização GS1 🎭</h1>
+  <form id="inscricaoForm">
+    <input type="text" name="Nome" placeholder="Seu nome" required />
+    <input type="text" name="Fantasia" placeholder="Nome da fantasia" required />
+    <button type="submit">Enviar inscrição</button>
+    <button type="reset">Limpar</button>
+    <p class="msg" id="mensagem"></p>
+  </form>
+
+  <div class="qrcode">
+    <p>Escaneie para acessar novamente:</p>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://narigadao.github.io/Confra-Fantasia/inscricao.html" alt="QR Code">
+  </div>
+
+  <script>
+    const form = document.getElementById("inscricaoForm");
+    const msg = document.getElementById("mensagem");
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwrkLD_b5bH_pNQJ2_Md4ng82SmBSrY_lagx7FVaFz9FmCh8Rv7EmnzhtHpa_ooQN5etA/exec";
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const data = new FormData(form);
+      fetch(scriptURL, { method: "POST", body: data })
+        .then(response => {
+          msg.innerText = "✅ Inscrição enviada com sucesso!";
+          form.reset();
+          setTimeout(() => msg.innerText = "", 3000);
+        })
+        .catch(error => {
+          msg.innerText = "❌ Erro ao enviar. Tente novamente.";
+        });
+    });
+  </script>
+</body>
+</html>
