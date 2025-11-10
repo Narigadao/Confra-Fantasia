@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Confraternização GS1</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+<body>
+  <header>🎉 Confraternização GS1</header>
+
+  <div class="container">
+    <h2>Escolha uma opção</h2>
+    <div class="qr">
+      <div>
+        <h3>Página de Inscrição</h3>
+        <canvas id="qrInscricao"></canvas>
+      </div>
+      <div>
+        <h3>Página de Votação</h3>
+        <canvas id="qrVotacao"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const base = window.location.origin + window.location.pathname.replace('index.html','');
+    QRCode.toCanvas(document.getElementById("qrInscricao"), base + "inscricao.html");
+    QRCode.toCanvas(document.getElementById("qrVotacao"), base + "votacao.html");
+  </script>
+</body>
+</html>
