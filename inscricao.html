@@ -29,68 +29,81 @@ button:disabled {
   <h1>Inscrição 🎭</h1>
   <input id="nome" placeholder="Seu nome completo">
   <input id="fantasia" placeholder="Nome da fantasia">
-  <button id="btnEnviar" onclick="enviar()">Enviar</button>
+  <button id="btnEnviar">Enviar</button>
 
   <script>
-  const api = "https://script.google.com/macros/s/AKfycbwa5XUEKEiT60kX3oy0svmxNLwOWT9J8f_vvlOxYGkIms1iyP-MjPdIGi1ddoqbVK3jVQ/exec";
+  // USE A NOVA URL QUE VOCÊ ME PASSOU
+  const API_URL = "https://script.google.com/macros/s/AKfycbwa5XUEKEiT60kX3oy0svmxNLwOWT9J8f_vvlOxYGkIms1iyP-MjPdIGi1ddoqbVK3jVQ/exec";
+
+  document.getElementById('btnEnviar').addEventListener('click', enviar);
 
   async function enviar() {
-    console.log("Função enviar chamada!");
+    console.log("🚀 Iniciando envio...");
     
     const nome = document.getElementById("nome").value.trim();
     const fantasia = document.getElementById("fantasia").value.trim();
     const btnEnviar = document.getElementById("btnEnviar");
-    
-    console.log("Nome:", nome);
-    console.log("Fantasia:", fantasia);
     
     if (!nome || !fantasia) {
       alert("Preencha todos os campos!");
       return;
     }
 
-    // Desabilita o botão durante o envio
     btnEnviar.disabled = true;
     btnEnviar.textContent = "Enviando...";
 
     try {
-      console.log("Fazendo requisição para API...");
-      
-      const response = await fetch(api, {
-        method: "POST",
-        body: JSON.stringify({ 
-          action: "inscrever", 
-          nome: nome, 
-          fantasia: fantasia 
+      console.log("📤 Enviando:", { nome, fantasia });
+
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'inscrever',
+          nome: nome,
+          fantasia: fantasia
         }),
-        headers: { 
-          "Content-Type": "application/json" 
+        headers: {
+          'Content-Type': 'application/json'
         }
       });
-      
-      console.log("Resposta recebida:", response);
+
+      console.log("📥 Status:", response.status);
       
       const result = await response.json();
-      console.log("Resultado:", result);
-      
+      console.log("✅ Resultado:", result);
+
       if (result.success) {
         alert("✅ " + result.message);
         document.getElementById("nome").value = "";
         document.getElementById("fantasia").value = "";
+        
+        // Verifica se os dados foram salvos
+        setTimeout(verificarDados, 1000);
       } else {
         alert("❌ " + result.message);
       }
+
     } catch (error) {
-      console.error("Erro completo:", error);
-      alert("🚫 Erro ao conectar com o servidor. Verifique o console (F12) para detalhes.");
+      console.error("💥 Erro:", error);
+      alert("🚫 Erro ao enviar. Abra o console (F12) para detalhes.");
     } finally {
-      // Reabilita o botão
       btnEnviar.disabled = false;
       btnEnviar.textContent = "Enviar";
     }
   }
 
-  // Adiciona evento de Enter nos campos
+  // Função para verificar se os dados foram salvos
+  async function verificarDados() {
+    try {
+      const response = await fetch(API_URL);
+      const dados = await response.json();
+      console.log("📊 Dados na planilha:", dados);
+    } catch (error) {
+      console.error("Erro ao verificar dados:", error);
+    }
+  }
+
+  // Enter para enviar
   document.getElementById('nome').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') enviar();
   });
@@ -99,7 +112,7 @@ button:disabled {
     if (e.key === 'Enter') enviar();
   });
 
-  console.log("Página carregada - script funcionando!");
+  console.log("✅ Página pronta! API URL:", API_URL);
   </script>
 </body>
 </html>
