@@ -1,179 +1,110 @@
-<!doctype html>
-<html lang="pt-BR">
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Resultados - Confraternização GS1</title>
+    <title>Resultados - Confraternização</title>
     <style>
-        body {
-            margin: 0;
-            background: #141414;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .fantasia {
-            background: #333;
-            margin: 15px;
-            padding: 25px;
-            border-radius: 15px;
-            display: inline-block;
-            min-width: 280px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-        .primeiro { 
-            background: linear-gradient(135deg, #E50914, #B20710);
-            transform: scale(1.05);
-        }
-        .segundo { 
-            background: linear-gradient(135deg, #B20710, #8A0000);
-        }
-        .terceiro { 
-            background: linear-gradient(135deg, #8A0000, #660000);
-        }
-        .ranking {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        .atualizacao {
-            color: #888;
-            margin: 20px 0;
-            font-size: 18px;
-        }
-        h1 {
-            color: #E50914;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-        }
-        .loading {
-            font-size: 20px;
-            color: #E50914;
-        }
-        .vencedor-trofeu {
-            font-size: 40px;
-            margin-bottom: 10px;
-        }
+        body { background: #141414; color: white; font-family: Arial; 
+               text-align: center; padding: 20px; margin: 0; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .fantasia { background: #333; margin: 15px; padding: 25px; 
+                    border-radius: 15px; display: inline-block; min-width: 280px;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        .primeiro { background: linear-gradient(135deg, #E50914, #B20710); }
+        .segundo { background: linear-gradient(135deg, #B20710, #8A0000); }
+        .terceiro { background: linear-gradient(135deg, #8A0000, #660000); }
+        h1 { color: #E50914; margin-bottom: 10px; font-size: 2.5em; }
+        .atualizacao { color: #888; margin: 20px 0; font-size: 16px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏆 RESULTADOS PARCIAIS</h1>
-        <div class="atualizacao" id="atualizacao">
-            ⏰ Última atualização: <span id="hora">carregando...</span>
-            <br><small>Atualizando automaticamente a cada 30 segundos</small>
+        <h1>🏆 Resultados em Tempo Real</h1>
+        <div class="atualizacao">
+            ⏰ Atualizado em: <span id="hora">carregando...</span>
+            <br><small>Atualizando automaticamente a cada 10 segundos</small>
         </div>
+        <div id="resultados">Carregando resultados...</div>
         
-        <div id="resultados">
-            <p class="loading">🎭 Carregando resultados...</p>
-        </div>
-
         <div style="margin-top: 40px;">
-            <a href="index.html" style="color: #E50914; font-size: 16px; text-decoration: none; background: #333; padding: 10px 20px; border-radius: 5px;">
+            <a href="index.html" style="color: #E50914; text-decoration: none; 
+               background: #333; padding: 10px 20px; border-radius: 5px;">
                 ← Voltar para a página inicial
             </a>
         </div>
     </div>
 
     <script>
-        // ✅ SEU ID DA PLANILHA
-        const PLANILHA_ID = "1a2HwURkiSfTelhSf1fKzt0a-ONAOdxv2sINglaAv5Ag";
-        
-        async function carregarResultados() {
-            try {
-                console.log("🔄 Atualizando resultados...");
+    const BIN_ID = "69174fdd43b1c97be9ad6212";
+    const API_KEY = "$2a$10$JApmGfSiV9tlvLo0nOIFX.iVHlXtOO760ew/5wXcp5r78pKsUc5NC";
+
+    async function carregarResultados() {
+        try {
+            const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            const data = await response.json();
+            
+            const container = document.getElementById('resultados');
+            
+            // Verifica se há votos
+            if (!data.record.votos || Object.keys(data.record.votos).length === 0) {
+                container.innerHTML = `
+                    <div style="background: #333; padding: 30px; border-radius: 10px; margin: 20px;">
+                        <h3>⏳ Aguardando votos...</h3>
+                        <p>Nenhum voto registrado ainda. Seja o primeiro a votar!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Converte votos para array e ordena
+            const ranking = Object.entries(data.record.votos)
+                .sort((a, b) => b[1] - a[1]);
+            
+            let html = '';
+            ranking.forEach(([fantasia, votos], index) => {
+                const classe = index === 0 ? 'primeiro' : 
+                              index === 1 ? 'segundo' : 
+                              index === 2 ? 'terceiro' : '';
+                const trofeu = index === 0 ? '🥇' : 
+                               index === 1 ? '🥈' : 
+                               index === 2 ? '🥉' : '🎭';
                 
-                // Pega dados diretamente da planilha pública
-                const url = `https://docs.google.com/spreadsheets/d/${PLANILHA_ID}/gviz/tq?tqx=out:json`;
-                
-                const response = await fetch(url);
-                const text = await response.text();
-                
-                // Processa resposta do Google
-                const json = JSON.parse(text.substring(47).slice(0, -2));
-                
-                const votosPorFantasia = {};
-                
-                // Processa cada linha (pula cabeçalho - linha 0)
-                json.table.rows.forEach((row, index) => {
-                    if (index > 0) { // Ignora cabeçalho
-                        const nome = row.c[0]?.v || "";
-                        const fantasia = row.c[1]?.v || "";
-                        const votos = parseInt(row.c[2]?.v) || 0;
-                        
-                        if (fantasia && fantasia.trim() !== "") {
-                            votosPorFantasia[fantasia] = (votosPorFantasia[fantasia] || 0) + votos;
-                        }
-                    }
-                });
-                
-                // Converte para array e ordena por votos
-                const ranking = Object.entries(votosPorFantasia)
-                    .sort((a, b) => b[1] - a[1]);
-                
-                // Exibe resultados
-                const container = document.getElementById('resultados');
-                
-                if (ranking.length === 0) {
-                    container.innerHTML = '<p class="loading">⏳ Nenhum voto registrado ainda. Seja o primeiro a votar!</p>';
-                    return;
-                }
-                
-                let html = '';
-                ranking.forEach(([fantasia, totalVotos], index) => {
-                    let classe = '';
-                    let trofeu = '🎭';
-                    
-                    if (index === 0) {
-                        classe = 'primeiro';
-                        trofeu = '🥇';
-                    } else if (index === 1) {
-                        classe = 'segundo';
-                        trofeu = '🥈';
-                    } else if (index === 2) {
-                        classe = 'terceiro';
-                        trofeu = '🥉';
-                    }
-                    
-                    html += `
-                        <div class="fantasia ${classe}">
-                            <div class="vencedor-trofeu">${trofeu}</div>
-                            <div class="ranking">${index + 1}º Lugar</div>
-                            <div style="font-size: 24px; margin: 15px 0; font-weight: bold;">${fantasia}</div>
-                            <div style="font-size: 32px; font-weight: bold;">${totalVotos} voto${totalVotos !== 1 ? 's' : ''}</div>
+                html += `
+                    <div class="fantasia ${classe}">
+                        <div style="font-size: 40px; margin-bottom: 10px;">${trofeu}</div>
+                        <div style="font-size: 28px; font-weight: bold; margin-bottom: 15px;">
+                            ${index + 1}º Lugar
                         </div>
-                    `;
-                });
-                
-                container.innerHTML = html;
-                
-                // Atualiza hora
-                document.getElementById('hora').textContent = new Date().toLocaleTimeString('pt-BR');
-                
-            } catch (error) {
-                console.error('❌ Erro ao carregar resultados:', error);
-                document.getElementById('resultados').innerHTML = 
-                    '<p class="loading">❌ Erro ao carregar resultados. Verifique se a planilha está pública.</p>';
-            }
+                        <div style="font-size: 24px; margin: 15px 0; font-weight: bold;">
+                            ${fantasia}
+                        </div>
+                        <div style="font-size: 32px; font-weight: bold;">
+                            ${votos} voto${votos !== 1 ? 's' : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            // Atualiza hora
+            document.getElementById('hora').textContent = new Date().toLocaleTimeString('pt-BR');
+            
+        } catch (error) {
+            console.error('Erro:', error);
+            document.getElementById('resultados').innerHTML = `
+                <div style="background: #333; padding: 20px; border-radius: 10px; margin: 20px;">
+                    <h3>❌ Erro ao carregar resultados</h3>
+                    <p>Tente recarregar a página.</p>
+                </div>
+            `;
         }
-        
-        // Atualiza a cada 30 segundos
-        carregarResultados();
-        setInterval(carregarResultados, 30000);
-        
-        // Atualiza também quando a página ganha foco
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                carregarResultados();
-            }
-        });
+    }
+
+    // Atualiza a cada 10 segundos
+    carregarResultados();
+    setInterval(carregarResultados, 10000);
     </script>
 </body>
 </html>
