@@ -1,65 +1,81 @@
-<!doctype html>
-<html lang="pt-BR">
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Inscrição - Confraternização GS1</title>
+    <title>Inscrição - Confraternização</title>
     <style>
-        body {
-            margin: 0;
-            background: #141414;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px 20px;
-        }
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        .qr-code {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin: 30px 0;
-        }
-        h1 {
-            color: #E50914;
-            margin-bottom: 20px;
-        }
-        .link-direto {
-            background: #333;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-        .voltar {
-            margin-top: 30px;
-        }
+        body { background: #141414; color: white; font-family: Arial; 
+               display: flex; flex-direction: column; align-items: center; 
+               justify-content: center; height: 100vh; margin: 0; }
+        input { margin: 10px; padding: 12px; width: 300px; border-radius: 6px; border: none; }
+        button { background: #E50914; color: white; border: none; padding: 12px 24px; 
+                 border-radius: 8px; cursor: pointer; margin-top: 15px; font-size: 16px; }
+        button:hover { background: #f40612; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📝 Inscrição de Fantasias</h1>
-        <p>Use o QR code abaixo para inscrever sua fantasia na competição</p>
+    <h1>📝 Inscreva sua Fantasia</h1>
+    <input id="nome" placeholder="Seu nome completo">
+    <input id="fantasia" placeholder="Nome da fantasia">
+    <button onclick="inscrever()">Enviar Inscrição</button>
+
+    <script>
+    const BIN_ID = "69174fdd43b1c97be9ad6212";
+    const API_KEY = "$2a$10$JApmGfSiV9tlvLo0nOIFX.iVHlXtOO760ew/5wXcp5r78pKsUc5NC";
+
+    async function inscrever() {
+        const nome = document.getElementById('nome').value.trim();
+        const fantasia = document.getElementById('fantasia').value.trim();
         
-        <div class="qr-code">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://forms.gle/q2mevXZbHMCF5Kno9" 
-                 alt="QR Code Inscrição" width="250" height="250">
-        </div>
-        
-        <div class="link-direto">
-            <strong>📲 Link direto para inscrição:</strong><br>
-            <a href="https://forms.gle/q2mevXZbHMCF5Kno9" style="color: #E50914;">
-                https://forms.gle/q2mevXZbHMCF5Kno9
-            </a>
-        </div>
-        
-        <div class="voltar">
-            <a href="index.html" style="color: #E50914; text-decoration: none; font-size: 16px;">
-                ← Voltar para a página inicial
-            </a>
-        </div>
-    </div>
+        if (!nome || !fantasia) {
+            alert('Preencha todos os campos!');
+            return;
+        }
+
+        try {
+            // Pega dados atuais
+            const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            const data = await response.json();
+            
+            // Adiciona nova inscrição
+            data.record.inscricoes.push({
+                nome: nome,
+                fantasia: fantasia,
+                timestamp: new Date().toISOString()
+            });
+
+            // Atualiza no JSONBin
+            const updateResponse = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': API_KEY
+                },
+                body: JSON.stringify(data.record)
+            });
+
+            if (updateResponse.ok) {
+                alert('✅ Inscrição realizada com sucesso!');
+                document.getElementById('nome').value = '';
+                document.getElementById('fantasia').value = '';
+            } else {
+                alert('❌ Erro ao salvar inscrição.');
+            }
+            
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('❌ Erro ao inscrever. Tente novamente.');
+        }
+    }
+
+    // Enter para enviar
+    document.getElementById('nome').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') inscrever();
+    });
+    document.getElementById('fantasia').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') inscrever();
+    });
+    </script>
 </body>
 </html>
