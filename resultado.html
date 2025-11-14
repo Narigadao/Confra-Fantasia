@@ -1,46 +1,179 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Resultados - Confraternização GS1</title>
-<style>
-body {
-  margin: 0; background: black; color: white; font-family: Arial, sans-serif; text-align: center;
-}
-h1 { color: #E50914; margin-top: 30px; }
-table {
-  margin: 20px auto; border-collapse: collapse; width: 80%; max-width: 800px;
-  color: white; font-size: 22px;
-}
-th, td { padding: 12px; border-bottom: 1px solid #333; }
-th { color: #E50914; }
-tr:nth-child(even) { background: #181818; }
-</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resultados - Confraternização GS1</title>
+    <style>
+        body {
+            margin: 0;
+            background: #141414;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .fantasia {
+            background: #333;
+            margin: 15px;
+            padding: 25px;
+            border-radius: 15px;
+            display: inline-block;
+            min-width: 280px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .primeiro { 
+            background: linear-gradient(135deg, #E50914, #B20710);
+            transform: scale(1.05);
+        }
+        .segundo { 
+            background: linear-gradient(135deg, #B20710, #8A0000);
+        }
+        .terceiro { 
+            background: linear-gradient(135deg, #8A0000, #660000);
+        }
+        .ranking {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .atualizacao {
+            color: #888;
+            margin: 20px 0;
+            font-size: 18px;
+        }
+        h1 {
+            color: #E50914;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .loading {
+            font-size: 20px;
+            color: #E50914;
+        }
+        .vencedor-trofeu {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-  <h1>🏆 Resultados em Tempo Real 🏆</h1>
-  <div id="tabela"></div>
+    <div class="container">
+        <h1>🏆 RESULTADOS PARCIAIS</h1>
+        <div class="atualizacao" id="atualizacao">
+            ⏰ Última atualização: <span id="hora">carregando...</span>
+            <br><small>Atualizando automaticamente a cada 30 segundos</small>
+        </div>
+        
+        <div id="resultados">
+            <p class="loading">🎭 Carregando resultados...</p>
+        </div>
 
-  <script>
-  const api = "https://script.google.com/macros/s/AKfycbwa5XUEKEiT60kX3oy0svmxNLwOWT9J8f_vvlOxYGkIms1iyP-MjPdIGi1ddoqbVK3jVQ/exec";
+        <div style="margin-top: 40px;">
+            <a href="index.html" style="color: #E50914; font-size: 16px; text-decoration: none; background: #333; padding: 10px 20px; border-radius: 5px;">
+                ← Voltar para a página inicial
+            </a>
+        </div>
+    </div>
 
-  async function atualizar() {
-    const res = await fetch(api);
-    const dados = await res.json();
-    dados.sort((a, b) => b.voto - a.voto);
-
-    let html = "<table><tr><th>Nome</th><th>Fantasia</th><th>Votos</th></tr>";
-    dados.forEach(p => {
-      html += `<tr><td>${p.nome}</td><td>${p.fantasia}</td><td>${p.voto}</td></tr>`;
-    });
-    html += "</table>";
-
-    document.getElementById("tabela").innerHTML = html;
-  }
-
-  setInterval(atualizar, 5000);
-  atualizar();
-  </script>
+    <script>
+        // ✅ SEU ID DA PLANILHA
+        const PLANILHA_ID = "1a2HwURkiSfTelhSf1fKzt0a-ONAOdxv2sINglaAv5Ag";
+        
+        async function carregarResultados() {
+            try {
+                console.log("🔄 Atualizando resultados...");
+                
+                // Pega dados diretamente da planilha pública
+                const url = `https://docs.google.com/spreadsheets/d/${PLANILHA_ID}/gviz/tq?tqx=out:json`;
+                
+                const response = await fetch(url);
+                const text = await response.text();
+                
+                // Processa resposta do Google
+                const json = JSON.parse(text.substring(47).slice(0, -2));
+                
+                const votosPorFantasia = {};
+                
+                // Processa cada linha (pula cabeçalho - linha 0)
+                json.table.rows.forEach((row, index) => {
+                    if (index > 0) { // Ignora cabeçalho
+                        const nome = row.c[0]?.v || "";
+                        const fantasia = row.c[1]?.v || "";
+                        const votos = parseInt(row.c[2]?.v) || 0;
+                        
+                        if (fantasia && fantasia.trim() !== "") {
+                            votosPorFantasia[fantasia] = (votosPorFantasia[fantasia] || 0) + votos;
+                        }
+                    }
+                });
+                
+                // Converte para array e ordena por votos
+                const ranking = Object.entries(votosPorFantasia)
+                    .sort((a, b) => b[1] - a[1]);
+                
+                // Exibe resultados
+                const container = document.getElementById('resultados');
+                
+                if (ranking.length === 0) {
+                    container.innerHTML = '<p class="loading">⏳ Nenhum voto registrado ainda. Seja o primeiro a votar!</p>';
+                    return;
+                }
+                
+                let html = '';
+                ranking.forEach(([fantasia, totalVotos], index) => {
+                    let classe = '';
+                    let trofeu = '🎭';
+                    
+                    if (index === 0) {
+                        classe = 'primeiro';
+                        trofeu = '🥇';
+                    } else if (index === 1) {
+                        classe = 'segundo';
+                        trofeu = '🥈';
+                    } else if (index === 2) {
+                        classe = 'terceiro';
+                        trofeu = '🥉';
+                    }
+                    
+                    html += `
+                        <div class="fantasia ${classe}">
+                            <div class="vencedor-trofeu">${trofeu}</div>
+                            <div class="ranking">${index + 1}º Lugar</div>
+                            <div style="font-size: 24px; margin: 15px 0; font-weight: bold;">${fantasia}</div>
+                            <div style="font-size: 32px; font-weight: bold;">${totalVotos} voto${totalVotos !== 1 ? 's' : ''}</div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                
+                // Atualiza hora
+                document.getElementById('hora').textContent = new Date().toLocaleTimeString('pt-BR');
+                
+            } catch (error) {
+                console.error('❌ Erro ao carregar resultados:', error);
+                document.getElementById('resultados').innerHTML = 
+                    '<p class="loading">❌ Erro ao carregar resultados. Verifique se a planilha está pública.</p>';
+            }
+        }
+        
+        // Atualiza a cada 30 segundos
+        carregarResultados();
+        setInterval(carregarResultados, 30000);
+        
+        // Atualiza também quando a página ganha foco
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                carregarResultados();
+            }
+        });
+    </script>
 </body>
 </html>
